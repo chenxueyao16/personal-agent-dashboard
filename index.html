@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>personal agent用户行为分析</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #f6f5f2;
+      --surface: #ffffff;
+      --surface-muted: #faf9f7;
+      --border: #e6e3dc;
+      --border-soft: #efece6;
+      --text: #1c1b19;
+      --text-secondary: #5c574e;
+      --text-muted: #8a8478;
+      --accent: #3d5a4c;
+      --accent-soft: #e8f0eb;
+      --shadow: 0 1px 2px rgba(28, 27, 25, 0.04), 0 8px 24px rgba(28, 27, 25, 0.05);
+      --radius: 14px;
+      --font: "Inter", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+      --mono: "SF Mono", "JetBrains Mono", ui-monospace, Menlo, monospace;
+      --col-min: 380px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 28px 24px 40px;
+    }
+
+    header {
+      margin-bottom: 22px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .title-block h1 {
+      font-size: 1.55rem;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    .title-block .subtitle {
+      margin-top: 6px;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .legend-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px 12px;
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 7px 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .legend-swatch {
+      width: 9px;
+      height: 9px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    /* Three products always in one horizontal row; scroll on narrow viewports */
+    .board-scroll {
+      width: 100%;
+      overflow-x: auto;
+      overflow-y: visible;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 4px;
+    }
+
+    .columns {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(var(--col-min), 1fr));
+      gap: 16px;
+      align-items: stretch;
+      min-width: calc(var(--col-min) * 3 + 32px);
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .card-header {
+      padding: 16px 16px 12px;
+      border-bottom: 1px solid var(--border-soft);
+      background: linear-gradient(180deg, #fcfbf9 0%, #ffffff 100%);
+      flex-shrink: 0;
+    }
+
+    .product-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .product-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .product-badge {
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--accent-soft);
+      border: 1px solid #d5e4db;
+      padding: 3px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .meta-row {
+      margin-top: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 14px;
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+
+    .meta-row strong {
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .chart-wrap {
+      padding: 14px 12px 6px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: var(--surface-muted);
+      border-bottom: 1px solid var(--border-soft);
+      flex-shrink: 0;
+    }
+
+    .chart-box {
+      width: 100%;
+      max-width: 240px;
+      height: 200px;
+      position: relative;
+    }
+
+    .table-wrap {
+      padding: 0 0 6px;
+      overflow-x: auto;
+      flex: 1;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.74rem;
+    }
+
+    thead th {
+      text-align: left;
+      font-weight: 600;
+      color: var(--text-muted);
+      font-size: 0.68rem;
+      letter-spacing: 0.02em;
+      padding: 10px 10px 7px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      position: sticky;
+      top: 0;
+      white-space: nowrap;
+    }
+
+    thead th.num { text-align: right; }
+
+    tbody td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border-soft);
+      vertical-align: top;
+      color: var(--text);
+    }
+
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: #faf8f4; }
+
+    td.scene {
+      font-weight: 550;
+      white-space: nowrap;
+    }
+
+    td.scene .dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 6px;
+      vertical-align: middle;
+      position: relative;
+      top: -1px;
+    }
+
+    td.num {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+    }
+
+    td.pct {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+    }
+
+    td.reps { min-width: 120px; }
+
+    .rep-links {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .rep-links a {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.7rem;
+      line-height: 1.35;
+      border-bottom: 1px solid transparent;
+      width: fit-content;
+      max-width: 100%;
+    }
+
+    .rep-links a:hover {
+      border-bottom-color: var(--accent);
+      color: #2c4338;
+    }
+
+    footer {
+      margin-top: 22px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 20px;
+      justify-content: space-between;
+    }
+
+    footer .note { max-width: 760px; }
+
+    footer .totals {
+      font-variant-numeric: tabular-nums;
+      color: var(--text-secondary);
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="title-block">
+        <h1>personal agent用户行为分析</h1>
+        <p class="subtitle">基于 X 平台检索的 concrete-task 帖子样本 · Muse / Instinct / Grok Bot 一排对比</p>
+      </div>
+      <div class="legend-bar" id="legendBar" aria-label="场景图例"></div>
+    </header>
+
+    <div class="board-scroll">
+      <div class="columns" id="columns"></div>
+    </div>
+
+    <footer>
+      <p class="note">注：各产品样本量来自约 100 次 X 搜索得到的 concrete-task 帖子；占比按该产品任务总数计算。链接为典型代表帖。</p>
+      <p class="totals">合计样本：Muse 322 · Instinct 29 · Grok Bot 75</p>
+    </footer>
+  </div>
+
+  <script>
+    const CATEGORY_COLORS = {
+      "邮件日历收件箱": "#3d5a4c",
+      "购物电商": "#c46b4a",
+      "旅行酒店航班": "#4a6fa5",
+      "账单保险省钱": "#b08d3e",
+      "电话客服": "#7a5c8c",
+      "技术开发设备": "#2f7d7a",
+      "研究策略内容": "#8b5e3c",
+      "餐厅订位": "#c47a8a",
+      "健康生活方式": "#5a8f5a",
+      "预约政务求职": "#6b7280"
+    };
+
+    const PRODUCTS = [
+      {
+        id: "muse",
+        name: "Muse",
+        tasks: 322,
+        searchCalls: "~100",
+        pool: "concrete-task",
+        rows: [
+          { scene: "邮件日历收件箱", count: 81, pct: 25.2, reps: [
+            { url: "https://x.com/davidlee/status/2107144366011912386", label: "家人出事短信更早ping" },
+            { url: "https://x.com/OffZeroCyber/status/2108385923797049581", label: "邮箱安全" },
+            { url: "https://x.com/__kutluk/status/2106493621511835918", label: "每日邮件日历" }
+          ]},
+          { scene: "购物电商", count: 79, pct: 24.5, reps: [
+            { url: "https://x.com/mcfazeli/status/2097419410986107061", label: "Shopify" },
+            { url: "https://x.com/ManuInvests/status/2098441822527758433", label: "agentic下单" },
+            { url: "https://x.com/clairefgfg/status/2104577350554046954", label: "DoorDash" }
+          ]},
+          { scene: "旅行酒店航班", count: 64, pct: 19.9, reps: [
+            { url: "https://x.com/SnowballCaptial/status/2108355151425945948", label: "纽约酒店" },
+            { url: "https://x.com/GregProctor/status/2099808523274051877", label: "威尼斯酒店" },
+            { url: "https://x.com/c00v/status/2108340895582204282", label: "改签航班" }
+          ]},
+          { scene: "账单保险省钱", count: 30, pct: 9.3, reps: [
+            { url: "https://x.com/ishverduzco/status/2108032691325276403", label: "取消订阅" },
+            { url: "https://x.com/danielendara/status/2109131884383064360", label: "无人认领财产" },
+            { url: "https://x.com/DudeWhoInvests/status/2101369142628470953", label: "车险" }
+          ]},
+          { scene: "电话客服", count: 25, pct: 7.8, reps: [
+            { url: "https://x.com/zbowling/status/2107500431295623517", label: "兽医" },
+            { url: "https://x.com/Echecrates/status/2107306472585515300", label: "联航" },
+            { url: "https://x.com/NilGurelPhD/status/2108778082245189642", label: "牙医" }
+          ]},
+          { scene: "技术开发设备", count: 20, pct: 6.2, reps: [
+            { url: "https://x.com/noelsequeira/status/2107836910458605607", label: "Codex" },
+            { url: "https://x.com/Steele_Jake/status/2108551389978972341", label: "SSH" },
+            { url: "https://x.com/DrRobLane/status/2108939770705416649", label: "vibe coding" }
+          ]},
+          { scene: "研究策略内容", count: 6, pct: 1.9, reps: [
+            { url: "https://x.com/nikhilaravi/status/2108586654365630602", label: "短阅读" },
+            { url: "https://x.com/Petersummer19/status/2108549053776867395", label: "情绪分析" },
+            { url: "https://x.com/jananivasudevan/status/2109025391948235085", label: "Substack" }
+          ]},
+          { scene: "餐厅订位", count: 6, pct: 1.9, reps: [
+            { url: "https://x.com/PlantInvestor16/status/2104711302539075670", label: "OpenTable" },
+            { url: "https://x.com/silveriomia/status/2102041651916984668", label: "Williamsburg" },
+            { url: "https://x.com/achalaugustine/status/2099939323651252374", label: "热门餐厅" }
+          ]},
+          { scene: "健康生活方式", count: 6, pct: 1.9, reps: [
+            { url: "https://x.com/RealHanyaHu/status/2109191024879038600", label: "法语" },
+            { url: "https://x.com/jkcraw/status/2108965448351904060", label: "饮食" },
+            { url: "https://x.com/BrenMOBoyle/status/2105833861343297948", label: "Spotify" }
+          ]},
+          { scene: "预约政务求职", count: 5, pct: 1.6, reps: [
+            { url: "https://x.com/moonShot_6/status/2098279406045384724", label: "DMV" },
+            { url: "https://x.com/DoucheBagInvest/status/2109103813143720400", label: "简历" },
+            { url: "https://x.com/SandyTheSlay/status/2105864459214549321", label: "预约" }
+          ]}
+        ]
+      },
+      {
+        id: "instinct",
+        name: "Instinct",
+        tasks: 29,
+        searchCalls: "~100",
+        pool: "concrete-task",
+        rows: [
+          { scene: "旅行酒店航班", count: 14, pct: 48.3, reps: [
+            { url: "https://x.com/vinidlidoo/status/2108377931550785855", label: "多城市行程+Amex积分" },
+            { url: "https://x.com/momwithai/status/2108455231759798660", label: "带娃全家旅行预订" },
+            { url: "https://x.com/instinctexpert/status/2107962313127149698", label: "东南亚机票+签证提醒" }
+          ]},
+          { scene: "购物电商", count: 7, pct: 24.1, reps: [
+            { url: "https://x.com/siddharth_iitm/status/2108235089381638569", label: "Wakefit退换催促" },
+            { url: "https://x.com/nihalmehta/status/2108931028484018559", label: "Shop Pay买万圣节装饰" },
+            { url: "https://x.com/threeoneonetwo/status/2109170413162909865", label: "Temu客厅效果图" }
+          ]},
+          { scene: "账单保险省钱", count: 2, pct: 6.9, reps: [
+            { url: "https://x.com/atibhi_a/status/2108499265165148551", label: "碗破损代聊退款" },
+            { url: "https://x.com/SwipesAndSmiles/status/2108451989491515593", label: "保险补件表格" }
+          ]},
+          { scene: "餐厅订位", count: 2, pct: 6.9, reps: [
+            { url: "https://x.com/MartyWeiner/status/2107927415918072255", label: "DC餐厅订位+电话确认" },
+            { url: "https://x.com/EtaiRahmil/status/2109032033024692492", label: "取消tee time后仍追问" }
+          ]},
+          { scene: "研究策略内容", count: 1, pct: 3.4, reps: [
+            { url: "https://x.com/ayushunleashed/status/2108602871768060285", label: "线索开发遇提示注入" }
+          ]},
+          { scene: "预约政务求职", count: 1, pct: 3.4, reps: [
+            { url: "https://x.com/mttjon/status/2108687214553317543", label: "伦敦当天理疗预约" }
+          ]},
+          { scene: "电话客服", count: 1, pct: 3.4, reps: [
+            { url: "https://x.com/jonathangburke/status/2107893068276093049", label: "Airbnb多语言客服" }
+          ]},
+          { scene: "技术开发设备", count: 1, pct: 3.4, reps: [
+            { url: "https://x.com/krika2810/status/2108916459271278689", label: "建站/CRM/Claude Code" }
+          ]}
+        ]
+      },
+      {
+        id: "grok",
+        name: "Grok Bot",
+        tasks: 75,
+        searchCalls: "~100",
+        pool: "concrete-task",
+        rows: [
+          { scene: "邮件日历收件箱", count: 25, pct: 33.3, reps: [
+            { url: "https://x.com/fbwalker4/status/2109066055830135113", label: "开车通话中拉合同日期并邮件客户" },
+            { url: "https://x.com/mikepat711/status/2108624182036603132", label: "启用Bot邮箱处理GitHub/agent mail" },
+            { url: "https://x.com/xrDLP/status/2108694124350284203", label: "夜间整理40封邮件并起草回复" }
+          ]},
+          { scene: "购物电商", count: 12, pct: 16.0, reps: [
+            { url: "https://x.com/dominustweet/status/2109156437431648600", label: "旧邮件找零件并下单" },
+            { url: "https://x.com/andreleibovici/status/2109217000597995773", label: "拍照代卖车库闲置" },
+            { url: "https://x.com/BeefStewtoo/status/2109153099122114893", label: "店铺类目/文案/定价/上架" }
+          ]},
+          { scene: "旅行酒店航班", count: 10, pct: 13.3, reps: [
+            { url: "https://x.com/reggieoverton/status/2108481937929351400", label: "淋浴中找航班并订Uber" },
+            { url: "https://x.com/derek_elliott/status/2108656590576586857", label: "春假Airbnb直连省$250" },
+            { url: "https://x.com/sklyarov/status/2108659695775056069", label: "找回阿姆斯特丹酒店遗忘手机" }
+          ]},
+          { scene: "技术开发设备", count: 7, pct: 9.3, reps: [
+            { url: "https://x.com/cmd_alt_ecs/status/2109066665791258885", label: "Tailscale/SSH杀进程" },
+            { url: "https://x.com/MachJuan8/status/2109140176874414459", label: "与Cursor协同跑agents" },
+            { url: "https://x.com/mikepat711/status/2108624182036603132", label: "Bot自有GitHub+邮箱" }
+          ]},
+          { scene: "账单保险省钱", count: 5, pct: 6.7, reps: [
+            { url: "https://x.com/jarrodwatts/status/2109185038680248437", label: "网费谈降$15/月" },
+            { url: "https://x.com/AcomathorDave/status/2109199196498841761", label: "同保障一半价车险" },
+            { url: "https://x.com/Cmin914725641/status/2108652585163063708", label: "集体诉讼+保修核对" }
+          ]},
+          { scene: "健康生活方式", count: 5, pct: 6.7, reps: [
+            { url: "https://x.com/ve55959/status/2109208087056036026", label: "发布Suno吉他专辑" },
+            { url: "https://x.com/thenovelninja/status/2109150354050785761", label: "为母亲建医疗日记Bot" },
+            { url: "https://x.com/AWar1586398/status/2109113062678462691", label: "辅助训练与生活方式" }
+          ]},
+          { scene: "电话客服", count: 4, pct: 5.3, reps: [
+            { url: "https://x.com/lafraia/status/2108535583798657469", label: "VoIP酒店测试电话" },
+            { url: "https://x.com/faiAI0/status/2109099983526101223", label: "自建电话+短信助手" },
+            { url: "https://x.com/NathanJBarnes/status/2109120865262830013", label: "打电话给Grok Bot办事" }
+          ]},
+          { scene: "研究策略内容", count: 4, pct: 5.3, reps: [
+            { url: "https://x.com/Root_Logic_0/status/2108921663148732806", label: "研究任务过夜高用量" },
+            { url: "https://x.com/DaaanielSan/status/2109163525402734626", label: "营销视频方案+插件" },
+            { url: "https://x.com/tomaslau/status/2109212226372644933", label: "Typefully起草发帖" }
+          ]},
+          { scene: "预约政务求职", count: 3, pct: 4.0, reps: [
+            { url: "https://x.com/MitchTiler/status/2109017328268812405", label: "续车牌+Costco轮胎预约" },
+            { url: "https://x.com/michaelyared/status/2108922682842681612", label: "开车约DMV/改道" },
+            { url: "https://x.com/PoorPrepper2112/status/2109107877294363107", label: "投简历约面试" }
+          ]}
+        ]
+      }
+    ];
+
+    const LEGEND_ORDER = [
+      "邮件日历收件箱", "购物电商", "旅行酒店航班", "账单保险省钱", "电话客服",
+      "技术开发设备", "研究策略内容", "餐厅订位", "健康生活方式", "预约政务求职"
+    ];
+
+    const legendBar = document.getElementById("legendBar");
+    LEGEND_ORDER.forEach(name => {
+      const el = document.createElement("span");
+      el.className = "legend-item";
+      el.innerHTML = `<span class="legend-swatch" style="background:${CATEGORY_COLORS[name]}"></span>${name}`;
+      legendBar.appendChild(el);
+    });
+
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    const columns = document.getElementById("columns");
+
+    PRODUCTS.forEach(product => {
+      const card = document.createElement("section");
+      card.className = "card";
+      card.setAttribute("aria-labelledby", `title-${product.id}`);
+
+      const chartId = `chart-${product.id}`;
+
+      const rowsHtml = product.rows.map(r => {
+        const color = CATEGORY_COLORS[r.scene] || "#999";
+        const links = r.reps.map(rep =>
+          `<a href="${escapeHtml(rep.url)}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(rep.label)}">${escapeHtml(rep.label)}</a>`
+        ).join("");
+        return `<tr>
+          <td class="scene"><span class="dot" style="background:${color}"></span>${escapeHtml(r.scene)}</td>
+          <td class="num">${r.count}</td>
+          <td class="pct">${r.pct.toFixed(1)}%</td>
+          <td class="reps"><div class="rep-links">${links}</div></td>
+        </tr>`;
+      }).join("");
+
+      card.innerHTML = `
+        <div class="card-header">
+          <div class="product-row">
+            <h2 class="product-name" id="title-${product.id}">${escapeHtml(product.name)}</h2>
+            <span class="product-badge">${product.tasks} tasks</span>
+          </div>
+          <div class="meta-row">
+            <span>搜索次数 <strong>${escapeHtml(product.searchCalls)}</strong></span>
+            <span>任务数 <strong>${product.tasks}</strong></span>
+            <span>样本池 <strong>${escapeHtml(product.pool)}</strong></span>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <div class="chart-box"><canvas id="${chartId}" aria-label="${escapeHtml(product.name)} 用例占比饼图"></canvas></div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>场景</th>
+                <th class="num">帖数</th>
+                <th class="num">占比</th>
+                <th>典型代表帖</th>
+              </tr>
+            </thead>
+            <tbody>${rowsHtml}</tbody>
+          </table>
+        </div>
+      `;
+
+      columns.appendChild(card);
+
+      const labels = product.rows.map(r => r.scene);
+      const data = product.rows.map(r => r.count);
+      const colors = product.rows.map(r => CATEGORY_COLORS[r.scene] || "#999");
+
+      new Chart(document.getElementById(chartId), {
+        type: "doughnut",
+        data: {
+          labels,
+          datasets: [{
+            data,
+            backgroundColor: colors,
+            borderColor: "#ffffff",
+            borderWidth: 2,
+            hoverOffset: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: "58%",
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label(ctx) {
+                  const row = product.rows[ctx.dataIndex];
+                  return ` ${row.scene}: ${row.count}（${row.pct.toFixed(1)}%）`;
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>
