@@ -21,7 +21,7 @@
       --radius: 14px;
       --font: "Inter", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
       --mono: "SF Mono", "JetBrains Mono", ui-monospace, Menlo, monospace;
-      --col-min: 320px;
+      --col-min: 280px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -102,10 +102,10 @@
 
     .columns {
       display: grid;
-      grid-template-columns: repeat(4, minmax(var(--col-min), 1fr));
+      grid-template-columns: repeat(5, minmax(var(--col-min), 1fr));
       gap: 16px;
       align-items: stretch;
-      min-width: calc(var(--col-min) * 4 + 48px);
+      min-width: calc(var(--col-min) * 5 + 64px);
     }
 
     .card {
@@ -306,7 +306,7 @@
     <header>
       <div class="title-block">
         <h1>Personal Agent用户行为分析</h1>
-        <p class="subtitle">基于 X 平台检索的 concrete-task 帖子样本 · Muse / Grok Bot / Instinct / Dots 一排对比</p>
+        <p class="subtitle">基于 X 平台检索的 concrete-task 帖子样本 · Muse / Grok Bot / Instinct / Dots / Cue 一排对比</p>
       </div>
       <div class="legend-bar" id="legendBar" aria-label="场景图例"></div>
     </header>
@@ -325,7 +325,7 @@
 
     <footer>
       <p class="note">注：累计样本=约 100 次 X 搜索的基线 concrete-task 帖子 + 每日10:00增量（按帖子ID去重）；占比按该产品任务总数计算。链接为典型代表帖。</p>
-      <p class="totals">合计样本：Muse 385 · Grok Bot 255 · Instinct 61 · Dots 30（累计至 2026-10-14）</p>
+      <p class="totals">合计样本：Muse 385 · Grok Bot 255 · Instinct 61 · Dots 30 · Cue 13（累计至 2026-10-14）</p>
     </footer>
   </div>
 
@@ -344,7 +344,7 @@
     };
 
     /*DAILY_START*/
-    const DAILY = {"asof": "2026-10-14 09:32", "window": "2026-10-13 10:27 – 2026-10-14 09:32（北京时间）", "date": "2026-10-14", "products": [{"id": "muse", "name": "Muse", "searchCalls": 30, "raw": 599, "pool": 385, "meaningful": 45, "tasks": 25, "rows": [{"scene": "研究策略内容", "count": 6, "reps": [{"url": "https://x.com/richfournier/status/2109845098532098184", "label": "为播客搭建嘉宾邀约和外联名单"}, {"url": "https://x.com/PeterZMA/status/2109881245723492818", "label": "上传MP3后自动做出音乐视频"}, {"url": "https://x.com/gc2217/status/2109903014475845745", "label": "凭模糊指令查邮件、读Google表格和图片附件，还找出资料缺口"}], "pct": 24.0}, {"scene": "邮件日历收件箱", "count": 5, "reps": [{"url": "https://x.com/Stealthy_GCoach/status/2109901755999764756", "label": "10分钟扫完5.4万封邮件，删掉1.5万封营销垃圾"}, {"url": "https://x.com/AlexDowlen/status/2110103986942689397", "label": "分拣远程物业助理与运营邮箱之间的往来邮件"}, {"url": "https://x.com/MrQuiyst/status/2110091296865911046", "label": "提取学校通讯里的日期，出现3处幻觉、星期标错"}], "pct": 20.0}, {"scene": "账单保险省钱", "count": 4, "reps": [{"url": "https://x.com/DannyBlvck/status/2109837748911640836", "label": "清查订阅，省下约$1,000"}, {"url": "https://x.com/stocksandbjj/status/2110118929515585956", "label": "通过在线客服谈下手机话费"}, {"url": "https://x.com/GregProctor/status/2110153347835498882", "label": "登录夫妻两家车险账户比价，找最优车险"}], "pct": 16.0}, {"scene": "购物电商", "count": 4, "reps": [{"url": "https://x.com/DannyBlvck/status/2109838268875370763", "label": "列素食购物清单、算总价、经确认后在DoorDash付款"}, {"url": "https://x.com/chasepatton126/status/2110112346828070930", "label": "发现购物技能没装，自己找到并装好后完成购物"}, {"url": "https://x.com/Bwilson/status/2110159569196331382", "label": "主动提醒快递改期，并附上天气提示"}], "pct": 16.0}, {"scene": "电话客服", "count": 2, "reps": [{"url": "https://x.com/AIRoboticsInt/status/2109854466597896414", "label": "连打多家电话问清信息，每通附转写，需授权时把用户拉进通话"}, {"url": "https://x.com/c_senst/status/2110125322851201149", "label": "致电Delta修改账户，在对方AI和人工客服间切换"}], "pct": 8.0}, {"scene": "旅行酒店航班", "count": 2, "reps": [{"url": "https://x.com/amelia_metters/status/2110163580092104920", "label": "按区域、预算和装修偏好扫出旧金山长租转租房"}, {"url": "https://x.com/adiperswal/status/2109856811763564729", "label": "找到飞澳洲的便宜机票（同题Instinct没找到）"}], "pct": 8.0}, {"scene": "预约政务求职", "count": 1, "reps": [{"url": "https://x.com/drk36/status/2110083943492194413", "label": "用户拍下街上碎玻璃，几小时后市环卫车来清理"}], "pct": 4.0}, {"scene": "技术开发设备", "count": 1, "reps": [{"url": "https://x.com/rokobasili/status/2110085752004722756", "label": "在手机上为日产Leaf做了个类Tesla的App"}], "pct": 4.0}]}, {"id": "grokbot", "name": "Grok Bot", "searchCalls": 30, "raw": 750, "pool": 644, "meaningful": 133, "tasks": 88, "rows": [{"scene": "研究策略内容", "count": 28, "reps": [{"url": "https://x.com/Dheepanratnam/status/2109990137476022539", "label": "一句话让bot虚构产品并从头做完广告片"}, {"url": "https://x.com/0xTone/status/2110018929103946133", "label": "每天两次读新书签，配合Claude和Hermes筛出值得做的点子"}, {"url": "https://x.com/shawnbuilds/status/2110022577636938200", "label": "用4个bot替代$399/月的Profound，AI渠道询盘+28%"}], "pct": 31.8}, {"scene": "技术开发设备", "count": 19, "reps": [{"url": "https://x.com/RielStAmand/status/2110130802683945365", "label": "在VM上搭T3 Code+Tailscale，替代付费云端多agent服务"}, {"url": "https://x.com/sword_pdf/status/2110130952404082701", "label": "为PS5模拟器做了一个PS2光盘“重载”按钮"}, {"url": "https://x.com/Jermooon/status/2110131592807026941", "label": "改用户的WordPress网站"}], "pct": 21.6}, {"scene": "购物电商", "count": 9, "reps": [{"url": "https://x.com/Mason_DuPree/status/2109990448097870137", "label": "查日历和假期后选影院、比座位图，买好《复联》首映票"}, {"url": "https://x.com/SebbyCorp/status/2110135505132331173", "label": "包办下个月的买菜和备餐"}, {"url": "https://x.com/100xCrashout/status/2110137386831053146", "label": "2分钟下单$200生鲜"}], "pct": 10.2}, {"scene": "账单保险省钱", "count": 9, "reps": [{"url": "https://x.com/Wenkk_wu/status/2110075777643630990", "label": "2天解决困扰10年的酒店手写送货单对账（每月千页）"}, {"url": "https://x.com/vatsaishere/status/2110081103495348318", "label": "为没用上的租车预订申请退款"}, {"url": "https://x.com/bridger_penn/status/2110085344788168911", "label": "跨团队agent查出一笔无人认领的周期账单归属"}], "pct": 10.2}, {"scene": "邮件日历收件箱", "count": 9, "reps": [{"url": "https://x.com/Salivon215909/status/2110133076982387153", "label": "首次使用就清理10万+封邮件"}, {"url": "https://x.com/scardinafineart/status/2110136677209399321", "label": "扫描邮件头、链接和附件哈希，识别钓鱼邮件"}, {"url": "https://x.com/F294249811/status/2110144590678569164", "label": "起草X帖子、盯Gmail里的订阅扣费"}], "pct": 10.2}, {"scene": "旅行酒店航班", "count": 6, "reps": [{"url": "https://x.com/tvykruta/status/2109992765463400595", "label": "独立订好Delta航班并办了升舱"}, {"url": "https://x.com/maestrooth/status/2110069446106640623", "label": "规划并用卡订好整趟东京行程"}, {"url": "https://x.com/shawn_pana/status/2110097941050634309", "label": "用自己的iPhone定位并操作Waymo App，预约到点叫车"}], "pct": 6.8}, {"scene": "预约政务求职", "count": 3, "reps": [{"url": "https://x.com/therealspig/status/2110143320433336390", "label": "离线期间端到端办完签证：调研、填表、上传、查进度"}, {"url": "https://x.com/andrewhoelzel/status/2110145563341799801", "label": "每15分钟刷DMV空位，把考试提前近一个月"}, {"url": "https://x.com/SpencerBar47026/status/2110175542301630876", "label": "替用户投了Tim Hortons的工作并拿到面试"}], "pct": 3.4}, {"scene": "健康生活方式", "count": 2, "reps": [{"url": "https://x.com/TheDouble6/status/2110175054302699618", "label": "通过门户、邮件和短信处理所有就医沟通"}, {"url": "https://x.com/4TESLANZ/status/2110179314419589515", "label": "分析划船机动作视频，指出两处问题"}], "pct": 2.3}, {"scene": "餐厅外卖", "count": 2, "reps": [{"url": "https://x.com/Mbrown00l/status/2110175707963826349", "label": "找迈阿密酒店附近的餐厅"}, {"url": "https://x.com/millepun/status/2110178057017598371", "label": "为太太生日找日本餐厅并完成预订"}], "pct": 2.3}, {"scene": "电话客服", "count": 1, "reps": [{"url": "https://x.com/JoshPather/status/2110103889005744138", "label": "打银行电话，闯过4层语音菜单后转给真人"}], "pct": 1.1}]}, {"id": "instinct", "name": "Instinct", "searchCalls": 30, "raw": 626, "pool": 480, "meaningful": 19, "tasks": 10, "rows": [{"scene": "购物电商", "count": 3, "reps": [{"url": "https://x.com/shubhangspov/status/2109966724351340828", "label": "用了一个多月：整理笔记、跟踪网购订单、订退旅行、Zomato/Swiggy点餐"}, {"url": "https://x.com/Vwakesahi/status/2110073894787018873", "label": "把日用杂货加进购物车"}, {"url": "https://x.com/real_poobah/status/2109836728102236216", "label": "推荐的eBay卖家好评率不到80%，也没提醒核查"}], "pct": 30.0}, {"scene": "账单保险省钱", "count": 2, "reps": [{"url": "https://x.com/ai_voss53755/status/2109845109357330436", "label": "找出两项订阅每年省几百美元，还测App、找客户"}, {"url": "https://x.com/JerimiahLee/status/2110013551632892249", "label": "一周内砍话费$850/年、清订阅$1,178/年、追回退款$1,245"}], "pct": 20.0}, {"scene": "旅行酒店航班", "count": 2, "reps": [{"url": "https://x.com/chuckh_/status/2110029111133601860", "label": "飞机上用“仅消息”免费WiFi发短信给它，让它代为上网"}, {"url": "https://x.com/Biswas_L/status/2109966539969687704", "label": "办好Air India网上值机，IndiGo网站则拦截了它"}], "pct": 20.0}, {"scene": "邮件日历收件箱", "count": 1, "reps": [{"url": "https://x.com/jayfunggy/status/2109871011323875379", "label": "未经企业审批就在Slack里跑通，约下重要算力合作会议"}], "pct": 10.0}, {"scene": "预约政务求职", "count": 1, "reps": [{"url": "https://x.com/boltyboy/status/2110175741459788154", "label": "代约5位专科医生，只有1家回电，掉线后再无下文"}], "pct": 10.0}, {"scene": "研究策略内容", "count": 1, "reps": [{"url": "https://x.com/growth56460/status/2109997901426352189", "label": "口述当天经历，由它整理成每日纪事"}], "pct": 10.0}]}, {"id": "dots", "name": "Dots", "searchCalls": 0, "raw": 0, "pool": 0, "meaningful": 0, "tasks": 4, "rows": [{"scene": "电话客服", "count": 2, "reps": [{"url": "https://x.com/frankieramirez/status/2110185232385102198", "label": "打电话让Dot带8岁女儿做项目约90分钟"}, {"url": "https://x.com/Whysaksham/status/2110073496416174574", "label": "边吃饭边打电话边办事"}], "pct": 50.0}, {"scene": "旅行酒店航班", "count": 1, "reps": [{"url": "https://x.com/davidlonjon/status/2110225223228555727", "label": "主动追问是否已订调研中的机票"}], "pct": 25.0}, {"scene": "技术开发设备", "count": 1, "reps": [{"url": "https://x.com/gabrielchua/status/2110189782764756999", "label": "在Slack里转发千条消息并跨工具委派Codex"}], "pct": 25.0}]}]};
+    const DAILY = {"asof": "2026-10-14 09:32", "window": "2026-10-13 10:27 – 2026-10-14 09:32（北京时间）", "date": "2026-10-14", "products": [{"id": "muse", "name": "Muse", "searchCalls": 30, "raw": 599, "pool": 385, "meaningful": 45, "tasks": 25, "rows": [{"scene": "研究策略内容", "count": 6, "reps": [{"url": "https://x.com/richfournier/status/2109845098532098184", "label": "为播客搭建嘉宾邀约和外联名单"}, {"url": "https://x.com/PeterZMA/status/2109881245723492818", "label": "上传MP3后自动做出音乐视频"}, {"url": "https://x.com/gc2217/status/2109903014475845745", "label": "凭模糊指令查邮件、读Google表格和图片附件，还找出资料缺口"}], "pct": 24.0}, {"scene": "邮件日历收件箱", "count": 5, "reps": [{"url": "https://x.com/Stealthy_GCoach/status/2109901755999764756", "label": "10分钟扫完5.4万封邮件，删掉1.5万封营销垃圾"}, {"url": "https://x.com/AlexDowlen/status/2110103986942689397", "label": "分拣远程物业助理与运营邮箱之间的往来邮件"}, {"url": "https://x.com/MrQuiyst/status/2110091296865911046", "label": "提取学校通讯里的日期，出现3处幻觉、星期标错"}], "pct": 20.0}, {"scene": "账单保险省钱", "count": 4, "reps": [{"url": "https://x.com/DannyBlvck/status/2109837748911640836", "label": "清查订阅，省下约$1,000"}, {"url": "https://x.com/stocksandbjj/status/2110118929515585956", "label": "通过在线客服谈下手机话费"}, {"url": "https://x.com/GregProctor/status/2110153347835498882", "label": "登录夫妻两家车险账户比价，找最优车险"}], "pct": 16.0}, {"scene": "购物电商", "count": 4, "reps": [{"url": "https://x.com/DannyBlvck/status/2109838268875370763", "label": "列素食购物清单、算总价、经确认后在DoorDash付款"}, {"url": "https://x.com/chasepatton126/status/2110112346828070930", "label": "发现购物技能没装，自己找到并装好后完成购物"}, {"url": "https://x.com/Bwilson/status/2110159569196331382", "label": "主动提醒快递改期，并附上天气提示"}], "pct": 16.0}, {"scene": "电话客服", "count": 2, "reps": [{"url": "https://x.com/AIRoboticsInt/status/2109854466597896414", "label": "连打多家电话问清信息，每通附转写，需授权时把用户拉进通话"}, {"url": "https://x.com/c_senst/status/2110125322851201149", "label": "致电Delta修改账户，在对方AI和人工客服间切换"}], "pct": 8.0}, {"scene": "旅行酒店航班", "count": 2, "reps": [{"url": "https://x.com/amelia_metters/status/2110163580092104920", "label": "按区域、预算和装修偏好扫出旧金山长租转租房"}, {"url": "https://x.com/adiperswal/status/2109856811763564729", "label": "找到飞澳洲的便宜机票（同题Instinct没找到）"}], "pct": 8.0}, {"scene": "预约政务求职", "count": 1, "reps": [{"url": "https://x.com/drk36/status/2110083943492194413", "label": "用户拍下街上碎玻璃，几小时后市环卫车来清理"}], "pct": 4.0}, {"scene": "技术开发设备", "count": 1, "reps": [{"url": "https://x.com/rokobasili/status/2110085752004722756", "label": "在手机上为日产Leaf做了个类Tesla的App"}], "pct": 4.0}]}, {"id": "grokbot", "name": "Grok Bot", "searchCalls": 30, "raw": 750, "pool": 644, "meaningful": 133, "tasks": 88, "rows": [{"scene": "研究策略内容", "count": 28, "reps": [{"url": "https://x.com/Dheepanratnam/status/2109990137476022539", "label": "一句话让bot虚构产品并从头做完广告片"}, {"url": "https://x.com/0xTone/status/2110018929103946133", "label": "每天两次读新书签，配合Claude和Hermes筛出值得做的点子"}, {"url": "https://x.com/shawnbuilds/status/2110022577636938200", "label": "用4个bot替代$399/月的Profound，AI渠道询盘+28%"}], "pct": 31.8}, {"scene": "技术开发设备", "count": 19, "reps": [{"url": "https://x.com/RielStAmand/status/2110130802683945365", "label": "在VM上搭T3 Code+Tailscale，替代付费云端多agent服务"}, {"url": "https://x.com/sword_pdf/status/2110130952404082701", "label": "为PS5模拟器做了一个PS2光盘“重载”按钮"}, {"url": "https://x.com/Jermooon/status/2110131592807026941", "label": "改用户的WordPress网站"}], "pct": 21.6}, {"scene": "购物电商", "count": 9, "reps": [{"url": "https://x.com/Mason_DuPree/status/2109990448097870137", "label": "查日历和假期后选影院、比座位图，买好《复联》首映票"}, {"url": "https://x.com/SebbyCorp/status/2110135505132331173", "label": "包办下个月的买菜和备餐"}, {"url": "https://x.com/100xCrashout/status/2110137386831053146", "label": "2分钟下单$200生鲜"}], "pct": 10.2}, {"scene": "账单保险省钱", "count": 9, "reps": [{"url": "https://x.com/Wenkk_wu/status/2110075777643630990", "label": "2天解决困扰10年的酒店手写送货单对账（每月千页）"}, {"url": "https://x.com/vatsaishere/status/2110081103495348318", "label": "为没用上的租车预订申请退款"}, {"url": "https://x.com/bridger_penn/status/2110085344788168911", "label": "跨团队agent查出一笔无人认领的周期账单归属"}], "pct": 10.2}, {"scene": "邮件日历收件箱", "count": 9, "reps": [{"url": "https://x.com/Salivon215909/status/2110133076982387153", "label": "首次使用就清理10万+封邮件"}, {"url": "https://x.com/scardinafineart/status/2110136677209399321", "label": "扫描邮件头、链接和附件哈希，识别钓鱼邮件"}, {"url": "https://x.com/F294249811/status/2110144590678569164", "label": "起草X帖子、盯Gmail里的订阅扣费"}], "pct": 10.2}, {"scene": "旅行酒店航班", "count": 6, "reps": [{"url": "https://x.com/tvykruta/status/2109992765463400595", "label": "独立订好Delta航班并办了升舱"}, {"url": "https://x.com/maestrooth/status/2110069446106640623", "label": "规划并用卡订好整趟东京行程"}, {"url": "https://x.com/shawn_pana/status/2110097941050634309", "label": "用自己的iPhone定位并操作Waymo App，预约到点叫车"}], "pct": 6.8}, {"scene": "预约政务求职", "count": 3, "reps": [{"url": "https://x.com/therealspig/status/2110143320433336390", "label": "离线期间端到端办完签证：调研、填表、上传、查进度"}, {"url": "https://x.com/andrewhoelzel/status/2110145563341799801", "label": "每15分钟刷DMV空位，把考试提前近一个月"}, {"url": "https://x.com/SpencerBar47026/status/2110175542301630876", "label": "替用户投了Tim Hortons的工作并拿到面试"}], "pct": 3.4}, {"scene": "健康生活方式", "count": 2, "reps": [{"url": "https://x.com/TheDouble6/status/2110175054302699618", "label": "通过门户、邮件和短信处理所有就医沟通"}, {"url": "https://x.com/4TESLANZ/status/2110179314419589515", "label": "分析划船机动作视频，指出两处问题"}], "pct": 2.3}, {"scene": "餐厅外卖", "count": 2, "reps": [{"url": "https://x.com/Mbrown00l/status/2110175707963826349", "label": "找迈阿密酒店附近的餐厅"}, {"url": "https://x.com/millepun/status/2110178057017598371", "label": "为太太生日找日本餐厅并完成预订"}], "pct": 2.3}, {"scene": "电话客服", "count": 1, "reps": [{"url": "https://x.com/JoshPather/status/2110103889005744138", "label": "打银行电话，闯过4层语音菜单后转给真人"}], "pct": 1.1}]}, {"id": "instinct", "name": "Instinct", "searchCalls": 30, "raw": 626, "pool": 480, "meaningful": 19, "tasks": 10, "rows": [{"scene": "购物电商", "count": 3, "reps": [{"url": "https://x.com/shubhangspov/status/2109966724351340828", "label": "用了一个多月：整理笔记、跟踪网购订单、订退旅行、Zomato/Swiggy点餐"}, {"url": "https://x.com/Vwakesahi/status/2110073894787018873", "label": "把日用杂货加进购物车"}, {"url": "https://x.com/real_poobah/status/2109836728102236216", "label": "推荐的eBay卖家好评率不到80%，也没提醒核查"}], "pct": 30.0}, {"scene": "账单保险省钱", "count": 2, "reps": [{"url": "https://x.com/ai_voss53755/status/2109845109357330436", "label": "找出两项订阅每年省几百美元，还测App、找客户"}, {"url": "https://x.com/JerimiahLee/status/2110013551632892249", "label": "一周内砍话费$850/年、清订阅$1,178/年、追回退款$1,245"}], "pct": 20.0}, {"scene": "旅行酒店航班", "count": 2, "reps": [{"url": "https://x.com/chuckh_/status/2110029111133601860", "label": "飞机上用“仅消息”免费WiFi发短信给它，让它代为上网"}, {"url": "https://x.com/Biswas_L/status/2109966539969687704", "label": "办好Air India网上值机，IndiGo网站则拦截了它"}], "pct": 20.0}, {"scene": "邮件日历收件箱", "count": 1, "reps": [{"url": "https://x.com/jayfunggy/status/2109871011323875379", "label": "未经企业审批就在Slack里跑通，约下重要算力合作会议"}], "pct": 10.0}, {"scene": "预约政务求职", "count": 1, "reps": [{"url": "https://x.com/boltyboy/status/2110175741459788154", "label": "代约5位专科医生，只有1家回电，掉线后再无下文"}], "pct": 10.0}, {"scene": "研究策略内容", "count": 1, "reps": [{"url": "https://x.com/growth56460/status/2109997901426352189", "label": "口述当天经历，由它整理成每日纪事"}], "pct": 10.0}]}, {"id": "dots", "name": "Dots", "searchCalls": 0, "raw": 0, "pool": 0, "meaningful": 0, "tasks": 4, "rows": [{"scene": "电话客服", "count": 2, "reps": [{"url": "https://x.com/frankieramirez/status/2110185232385102198", "label": "打电话让Dot带8岁女儿做项目约90分钟"}, {"url": "https://x.com/Whysaksham/status/2110073496416174574", "label": "边吃饭边打电话边办事"}], "pct": 50.0}, {"scene": "旅行酒店航班", "count": 1, "reps": [{"url": "https://x.com/davidlonjon/status/2110225223228555727", "label": "主动追问是否已订调研中的机票"}], "pct": 25.0}, {"scene": "技术开发设备", "count": 1, "reps": [{"url": "https://x.com/gabrielchua/status/2110189782764756999", "label": "在Slack里转发千条消息并跨工具委派Codex"}], "pct": 25.0}]}, {"id": "cue", "name": "Cue", "searchCalls": 6, "raw": 0, "pool": 0, "meaningful": 0, "tasks": 0, "rows": []}]};
     /*DAILY_END*/
 
     /*PRODUCTS_START*/
@@ -1084,6 +1084,79 @@
      {
       "url": "https://x.com/PrimeBreaf1/status/2105769114900046129",
       "label": "按要求订到意大利餐厅晚餐（体验与演示有落差）"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "cue",
+  "name": "Cue",
+  "tasks": 13,
+  "searchCalls": "~100",
+  "pool": "concrete-task",
+  "rows": [
+   {
+    "scene": "电话客服",
+    "count": 7,
+    "pct": 53.8,
+    "reps": [
+     {
+      "url": "https://x.com/KarthikIO/status/2104651648044056813",
+      "label": "打电话查库存，接通后立即挂断"
+     },
+     {
+      "url": "https://x.com/KarthikIO/status/2104636090296742396",
+      "label": "在旧金山用 Cue 本地号打电话查询/预订"
+     },
+     {
+      "url": "https://x.com/mokshaowei/status/2104742580659573163",
+      "label": "开通电话服务，打电话约午餐失败（易被背景音打断）"
+     }
+    ]
+   },
+   {
+    "scene": "邮件日历收件箱",
+    "count": 3,
+    "pct": 23.1,
+    "reps": [
+     {
+      "url": "https://x.com/ChrisUniverse/status/2106467973263425556",
+      "label": "同提示词对比五家；Cue 未给市政府发邮件（Dots 发出）"
+     },
+     {
+      "url": "https://x.com/ChrisUniverse/status/2106307690544734509",
+      "label": "同提示发给 Muse/Cue/Bot/Perplexity，均未给市政府发邮件"
+     },
+     {
+      "url": "https://x.com/davidazua/status/2109730505679683618",
+      "label": "独立邮箱2分钟内自动回复进站线索表单"
+     }
+    ]
+   },
+   {
+    "scene": "购物电商",
+    "count": 2,
+    "pct": 15.4,
+    "reps": [
+     {
+      "url": "https://x.com/Khushiiieee_/status/2105714740387618932",
+      "label": "试用 Cue，自称 agent 独立完成一次外卖下单"
+     },
+     {
+      "url": "https://x.com/BGramhan/status/2104780058128998660",
+      "label": "开通电话选项时被直接扣费，无结账确认"
+     }
+    ]
+   },
+   {
+    "scene": "账单保险省钱",
+    "count": 1,
+    "pct": 7.7,
+    "reps": [
+     {
+      "url": "https://x.com/niko70129972/status/2109923072660906157",
+      "label": "把杂活交给Cue，含与客服battle退款"
      }
     ]
    }
