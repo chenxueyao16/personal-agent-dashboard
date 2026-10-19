@@ -21,7 +21,7 @@
       --radius: 14px;
       --font: "Inter", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
       --mono: "SF Mono", "JetBrains Mono", ui-monospace, Menlo, monospace;
-      --col-min: 280px;
+      --col-min: 200px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -36,9 +36,9 @@
     }
 
     .page {
-      max-width: 1800px;
+      max-width: 1440px;
       margin: 0 auto;
-      padding: 28px 24px 40px;
+      padding: 24px 16px 40px;
     }
 
     header {
@@ -91,21 +91,32 @@
       flex-shrink: 0;
     }
 
-    /* Six products in one horizontal row; scroll on narrow viewports */
+    /* Five products share a normal desktop width; scroll only when narrow */
     .board-scroll {
       width: 100%;
-      overflow-x: auto;
+      overflow-x: visible;
       overflow-y: visible;
-      -webkit-overflow-scrolling: touch;
       padding-bottom: 4px;
     }
 
     .columns {
       display: grid;
-      grid-template-columns: repeat(6, minmax(var(--col-min), 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
       align-items: stretch;
-      min-width: calc(var(--col-min) * 6 + 80px);
+      min-width: 0;
+    }
+
+    @media (max-width: 1080px) {
+      .board-scroll {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .columns {
+        grid-template-columns: repeat(5, minmax(var(--col-min), 1fr));
+        min-width: calc(var(--col-min) * 5 + 48px);
+      }
     }
 
     .card {
@@ -183,8 +194,8 @@
     }
 
     .table-wrap {
-      padding: 0 0 6px;
-      overflow-x: auto;
+      padding: 0 0 8px;
+      overflow-x: visible;
       flex: 1;
     }
 
@@ -192,6 +203,7 @@
       width: 100%;
       border-collapse: collapse;
       font-size: 0.74rem;
+      table-layout: fixed;
     }
 
     thead th {
@@ -200,29 +212,44 @@
       color: var(--text-muted);
       font-size: 0.68rem;
       letter-spacing: 0.02em;
-      padding: 10px 10px 7px;
+      padding: 8px 6px 6px;
       border-bottom: 1px solid var(--border);
       background: var(--surface);
       position: sticky;
       top: 0;
-      white-space: nowrap;
+      white-space: normal;
     }
+
+    thead th:nth-child(1) { width: 54%; }
+    thead th:nth-child(2) { width: 20%; }
+    thead th:nth-child(3) { width: 26%; }
 
     thead th.num { text-align: right; }
 
     tbody td {
-      padding: 8px 10px;
+      padding: 6px 6px;
       border-bottom: 1px solid var(--border-soft);
       vertical-align: top;
       color: var(--text);
     }
 
-    tbody tr:last-child td { border-bottom: none; }
-    tbody tr:hover td { background: #faf8f4; }
+    tbody.scene-group tr.metrics td {
+      border-bottom: none;
+      padding-bottom: 1px;
+    }
+
+    tbody.scene-group tr.rep-row td {
+      padding-top: 1px;
+    }
+
+    tbody.scene-group:last-child tr.rep-row td { border-bottom: none; }
+    tbody.scene-group:hover td { background: #faf8f4; }
 
     td.scene {
       font-weight: 550;
-      white-space: nowrap;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: break-word;
     }
 
     td.scene .dot {
@@ -255,7 +282,10 @@
       font-size: 0.7rem;
     }
 
-    td.reps { min-width: 120px; }
+    td.reps {
+      min-width: 0;
+      white-space: normal;
+    }
 
     .rep-links {
       display: flex;
@@ -266,11 +296,15 @@
     .rep-links a {
       color: var(--accent);
       text-decoration: none;
-      font-size: 0.7rem;
+      font-size: 0.72rem;
       line-height: 1.35;
       border-bottom: 1px solid transparent;
-      width: fit-content;
+      display: block;
+      width: auto;
       max-width: 100%;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: break-word;
     }
 
     .rep-links a:hover {
@@ -306,7 +340,7 @@
     <header>
       <div class="title-block">
         <h1>Personal Agent用户行为分析</h1>
-        <p class="subtitle">基于 X 平台检索的 concrete-task 帖子样本 · Muse / Grok Bot / Instinct / Dots / Cue / Today 一排对比</p>
+        <p class="subtitle">基于 X 平台检索的 concrete-task 帖子样本 · Muse / Grok Bot / Instinct / Dots / Cue 一排对比</p>
       </div>
       <div class="legend-bar" id="legendBar" aria-label="场景图例"></div>
     </header>
@@ -324,8 +358,8 @@
     </div>
 
     <footer>
-      <p class="note">注：累计样本=约 100 次 X 搜索的基线 concrete-task 帖子 + 每日10:00增量（按帖子ID去重）；Today 基线来自小红书 concrete-task 笔记（已剔营销簇）。占比按该产品任务总数计算。链接为典型代表帖。</p>
-      <p class="totals">合计样本：Muse 437 · Grok Bot 344 · Instinct 88 · Dots 64 · Cue 15 · Today 11（累计至 2026-10-19）</p>
+      <p class="note">注：累计样本=约 100 次 X 搜索的基线 concrete-task 帖子 + 每日10:00增量（按帖子ID去重）。占比按该产品任务总数计算。链接为典型代表帖。</p>
+      <p class="totals">合计样本：Muse 437 · Grok Bot 344 · Instinct 88 · Dots 64 · Cue 15（累计至 2026-10-19）</p>
     </footer>
   </div>
 
@@ -344,7 +378,7 @@
     };
 
     /*DAILY_START*/
-    const DAILY = {"asof": "2026-10-19 09:55", "window": "2026-10-16 09:50 – 2026-10-19 09:55（北京时间）", "date": "2026-10-19", "products": [{"id": "muse", "name": "Muse", "searchCalls": 27, "raw": 534, "pool": 394, "meaningful": 55, "tasks": 14, "rows": [{"scene": "旅行酒店航班", "count": 5, "reps": [{"url": "https://x.com/rja907/status/2111296276180713556", "label": "从头到尾用Muse订Airbnb"}, {"url": "https://x.com/OyetokeT/status/2111553938751393905", "label": "Muse取消航班后退款卡在Duffel无客服（失败）"}, {"url": "https://x.com/altryne/status/2111610365390025124", "label": "抢到最后一张Hamilton票"}], "pct": 35.7}, {"scene": "账单保险省钱", "count": 3, "reps": [{"url": "https://x.com/jwarnke/status/2111083020513927209", "label": "查无人认领资金，一周后收到$137支票"}, {"url": "https://x.com/cjblev/status/2110922002810773683", "label": "德州电价最低方案+Amazon退货窗口提醒"}, {"url": "https://x.com/TwentyDollarAI/status/2111895227049099337", "label": "向Verizon争议旅行收费，找客服聊天需人工协助"}], "pct": 21.4}, {"scene": "购物电商", "count": 2, "reps": [{"url": "https://x.com/Twittin_Freak/status/2110964121575342293", "label": "跨站找货并比较各销售渠道利润，手机推送预警"}, {"url": "https://x.com/shiladitya/status/2111710665358639314", "label": "首次全代理采购：发现商品比价加购登录并读短信OTP结账"}], "pct": 14.3}, {"scene": "餐厅外卖", "count": 2, "reps": [{"url": "https://x.com/ai_ae_fan/status/2111299973539102887", "label": "点常点的三明治却自称第一次下单等连番失误（失败）"}, {"url": "https://x.com/oldedb/status/2111526973432594887", "label": "订披萨、订晚餐位、小站送礼三连失败（失败）"}], "pct": 14.3}, {"scene": "健康生活方式", "count": 1, "reps": [{"url": "https://x.com/bigsang/status/2111115315031785583", "label": "上传X光报告，指出囊肿是笔误并获医生确认"}], "pct": 7.1}, {"scene": "邮件日历收件箱", "count": 1, "reps": [{"url": "https://x.com/emmjay_init/status/2111154671230545984", "label": "规划行程、转邮箱与定时任务，事后主动跟进"}], "pct": 7.1}]}, {"id": "grokbot", "name": "Grok Bot", "searchCalls": 25, "raw": 622, "pool": 512, "meaningful": 90, "tasks": 29, "rows": [{"scene": "购物电商", "count": 7, "reps": [{"url": "https://x.com/ZeusRadls/status/2111871068340175322", "label": "代购Sees糖果礼盒，礼品卡+Apple Card完成支付"}, {"url": "https://x.com/elkrefuge/status/2111893569912832327", "label": "用bot在Walmart下单成功"}, {"url": "https://x.com/tommithetechie/status/2111985778821624111", "label": "糖尿病友好杂货bot按预算填好购物车"}], "pct": 24.1}, {"scene": "邮件日历收件箱", "count": 6, "reps": [{"url": "https://x.com/kanemorrone19/status/2111833393038024754", "label": "按目标自动排满个人日历"}, {"url": "https://x.com/TravisWeathers/status/2111893942107275332", "label": "工作日晨检日历邀请，只标未回复的"}, {"url": "https://x.com/TravisWeathers/status/2111827556857266405", "label": "每小时分拣收件箱并每日退订清扫"}], "pct": 20.7}, {"scene": "账单保险省钱", "count": 5, "reps": [{"url": "https://x.com/AlexBeriault1/status/2111882081605493105", "label": "邮件揪出未知订阅并代写取消信，退回CAD$330"}, {"url": "https://x.com/attack_engineer/status/2111977898559111470", "label": "聊天向T-Mobile追回$260并再降$20/月"}, {"url": "https://x.com/metaknight_sf/status/2111963194633724344", "label": "翻一年收据+22页话费单，揪出年白花约$1070"}], "pct": 17.2}, {"scene": "旅行酒店航班", "count": 4, "reps": [{"url": "https://x.com/wesselvk/status/2111886632529920422", "label": "阿姆斯特丹↔纽约行程两端电动Uber全订好"}, {"url": "https://x.com/TravelingTony69/status/2111878096496529561", "label": "整趟度假：航班车酒店并订NFL票"}, {"url": "https://x.com/Lau_renpetersen/status/2111938236222484610", "label": "规划并刷卡订下里斯本行程"}], "pct": 13.8}, {"scene": "电话客服", "count": 3, "reps": [{"url": "https://x.com/awhxtech/status/2111976345089507566", "label": "打电话跟Xfinity谈宽带：1G/$50月省$35"}, {"url": "https://x.com/georgebsocial/status/2111971538085822788", "label": "谈降网费$58/月"}, {"url": "https://x.com/JSB152sbcg5268/status/2111925991945965961", "label": "朋友的bot打来并留下完整留言"}], "pct": 10.3}, {"scene": "餐厅订位", "count": 2, "reps": [{"url": "https://x.com/BrianRoemmele/status/2111812467500458135", "label": "打电话订意大利餐厅位（语音订位bot）"}, {"url": "https://x.com/james_fowler_/status/2111888527826813404", "label": "打电话订到通常只接受大桌的餐厅位"}], "pct": 6.9}, {"scene": "预约政务求职", "count": 2, "reps": [{"url": "https://x.com/TravisWeathers/status/2111866499350835477", "label": "Slack新申请人落地即iMessage联系，日扫漏网"}, {"url": "https://x.com/signalnoise8020/status/2111976018257023483", "label": "搜电工承包商，数日后邮件催交车库安装照片"}], "pct": 6.9}]}, {"id": "instinct", "name": "Instinct", "searchCalls": 25, "raw": 590, "pool": 492, "meaningful": 28, "tasks": 13, "rows": [{"scene": "购物电商", "count": 3, "reps": [{"url": "https://x.com/billkavadias/status/2111912546651525311", "label": "首次代理结账：找硬件、比价并按偏好配送发货"}, {"url": "https://x.com/AIGenX_/status/2111708742576460091", "label": "导航儿子球赛、推迟狗粮、买衣服并订晚宴物资"}, {"url": "https://x.com/hellwolf2025/status/2111486558033391719", "label": "Shopify店用USDC/钱包一键付款演示"}], "pct": 23.1}, {"scene": "账单保险省钱", "count": 2, "reps": [{"url": "https://x.com/ldagar315/status/2111323086758797520", "label": "提醒待付款与域名续费，取消无用附加项并邮件追按比例退款"}, {"url": "https://x.com/asemota/status/2111844703477919950", "label": "与Grok Bot对照：Instinct找到Google往来并算退款跟进"}], "pct": 15.4}, {"scene": "研究策略内容", "count": 2, "reps": [{"url": "https://x.com/InstinctAddict/status/2111877001900433910", "label": "令其运营4个YouTube频道每日自动发片"}, {"url": "https://x.com/justinfredette/status/2111201263769817543", "label": "丢给杂乱问题后在iMessage交回带出处的调研"}], "pct": 15.4}, {"scene": "电话客服", "count": 1, "reps": [{"url": "https://x.com/asemota/status/2111834775883329918", "label": "接手拖两年的Google Fi设备保障理赔"}], "pct": 7.7}, {"scene": "旅行酒店航班", "count": 1, "reps": [{"url": "https://x.com/ChaitenyaG/status/2111241438017257752", "label": "读细则盯舱位开放瞬间订上个人舱座位"}], "pct": 7.7}, {"scene": "技术开发设备", "count": 1, "reps": [{"url": "https://x.com/jshgrvs/status/2111340890807796134", "label": "两天搭两店，洗澡时从仓库加Chrome扩展到网店"}], "pct": 7.7}, {"scene": "餐厅外卖", "count": 1, "reps": [{"url": "https://x.com/6d617474/status/2111867378632192367", "label": "早餐三明治漏订香肠（失败）"}], "pct": 7.7}, {"scene": "邮件日历收件箱", "count": 1, "reps": [{"url": "https://x.com/JSP0004/status/2111929036737839222", "label": "Instinct发信给创始人吐槽越来越不稳，怕改投Muse（失败）"}], "pct": 7.7}, {"scene": "健康生活方式", "count": 1, "reps": [{"url": "https://x.com/xartzj/status/2111884588377387041", "label": "设一天四次喝水提醒"}], "pct": 7.7}]}, {"id": "dots", "name": "Dots", "searchCalls": 26, "raw": 369, "pool": 265, "meaningful": 45, "tasks": 15, "rows": [{"scene": "技术开发设备", "count": 10, "reps": [{"url": "https://x.com/devhims/status/2111672219046973480", "label": "擅自用Codex Cloud做代码审查烧额度（越权）"}, {"url": "https://x.com/e38383/status/2111216109688963129", "label": "VM+Tailscale自动管更新与服务报错"}, {"url": "https://x.com/E__Strobel/status/2111126773299859803", "label": "当编排器一小时内做出核心功能"}], "pct": 66.7}, {"scene": "账单保险省钱", "count": 3, "reps": [{"url": "https://x.com/kylewgrove/status/2111727717683261780", "label": "一句话取消拖了三期账单的僵尸健身房订阅"}, {"url": "https://x.com/soycronus/status/2111508293856186678", "label": "工作Dot与个人Dot互发邮件再拉CPA报税约20分钟"}, {"url": "https://x.com/marginaldollar/status/2111573524154319181", "label": "提醒领取$200 Claude API额度"}], "pct": 20.0}, {"scene": "电话客服", "count": 1, "reps": [{"url": "https://x.com/btraut/status/2111265536181248015", "label": "接入客服聊天自称代理砍价，双方bot再叫人类介入"}], "pct": 6.7}, {"scene": "研究策略内容", "count": 1, "reps": [{"url": "https://x.com/BradGroux/status/2111130900083642511", "label": "机场回家路上与Dot通话45分钟重塑工作流"}], "pct": 6.7}]}, {"id": "cue", "name": "Cue", "searchCalls": 15, "raw": 120, "pool": 48, "meaningful": 4, "tasks": 2, "rows": [{"scene": "邮件日历收件箱", "count": 1, "reps": [{"url": "https://x.com/yummysoosu/status/2111400086009938008", "label": "两Cue互不认识，拉群后互换邮箱并与Grok Bot互报动作"}], "pct": 50.0}, {"scene": "技术开发设备", "count": 1, "reps": [{"url": "https://x.com/yummysoosu/status/2111580995397009482", "label": "画头像却不能自改资料，对比Grok Bot可自设"}], "pct": 50.0}]}, {"id": "today", "name": "Today", "searchCalls": 0, "raw": 0, "pool": 0, "meaningful": 0, "tasks": 0, "rows": []}]};
+    const DAILY = {"asof": "2026-10-19 09:55", "window": "2026-10-16 09:50 – 2026-10-19 09:55（北京时间）", "date": "2026-10-19", "products": [{"id": "muse", "name": "Muse", "searchCalls": 27, "raw": 534, "pool": 394, "meaningful": 55, "tasks": 14, "rows": [{"scene": "旅行酒店航班", "count": 5, "reps": [{"url": "https://x.com/rja907/status/2111296276180713556", "label": "Muse全程订Airbnb"}, {"url": "https://x.com/OyetokeT/status/2111553938751393905", "label": "退款卡在Duffel（失败）"}, {"url": "https://x.com/altryne/status/2111610365390025124", "label": "抢到最后一张票"}], "pct": 35.7}, {"scene": "账单保险省钱", "count": 3, "reps": [{"url": "https://x.com/jwarnke/status/2111083020513927209", "label": "查到无人认领资金$137"}, {"url": "https://x.com/cjblev/status/2110922002810773683", "label": "最低电价+退货提醒"}, {"url": "https://x.com/TwentyDollarAI/status/2111895227049099337", "label": "争议旅行收费需人工"}], "pct": 21.4}, {"scene": "购物电商", "count": 2, "reps": [{"url": "https://x.com/Twittin_Freak/status/2110964121575342293", "label": "跨站比价并推送预警"}, {"url": "https://x.com/shiladitya/status/2111710665358639314", "label": "比价加购并短信结账"}], "pct": 14.3}, {"scene": "餐厅外卖", "count": 2, "reps": [{"url": "https://x.com/ai_ae_fan/status/2111299973539102887", "label": "三明治下单连错（失败）"}, {"url": "https://x.com/oldedb/status/2111526973432594887", "label": "订餐订位送礼都失败"}], "pct": 14.3}, {"scene": "健康生活方式", "count": 1, "reps": [{"url": "https://x.com/bigsang/status/2111115315031785583", "label": "X光报告指出囊肿笔误"}], "pct": 7.1}, {"scene": "邮件日历收件箱", "count": 1, "reps": [{"url": "https://x.com/emmjay_init/status/2111154671230545984", "label": "排行程转邮箱并跟进"}], "pct": 7.1}]}, {"id": "grokbot", "name": "Grok Bot", "searchCalls": 25, "raw": 622, "pool": 512, "meaningful": 90, "tasks": 29, "rows": [{"scene": "购物电商", "count": 7, "reps": [{"url": "https://x.com/ZeusRadls/status/2111871068340175322", "label": "礼品卡买下糖果礼盒"}, {"url": "https://x.com/elkrefuge/status/2111893569912832327", "label": "Walmart下单成功"}, {"url": "https://x.com/tommithetechie/status/2111985778821624111", "label": "按预算填好杂货车"}], "pct": 24.1}, {"scene": "邮件日历收件箱", "count": 6, "reps": [{"url": "https://x.com/kanemorrone19/status/2111833393038024754", "label": "按目标自动排满个人日历"}, {"url": "https://x.com/TravisWeathers/status/2111893942107275332", "label": "晨检邀请只标未回复"}, {"url": "https://x.com/TravisWeathers/status/2111827556857266405", "label": "分拣收件箱并清退订"}], "pct": 20.7}, {"scene": "账单保险省钱", "count": 5, "reps": [{"url": "https://x.com/AlexBeriault1/status/2111882081605493105", "label": "取消未知订阅退回$330"}, {"url": "https://x.com/attack_engineer/status/2111977898559111470", "label": "追回$260再降月费"}, {"url": "https://x.com/metaknight_sf/status/2111963194633724344", "label": "翻账单揪出白花$1070"}], "pct": 17.2}, {"scene": "旅行酒店航班", "count": 4, "reps": [{"url": "https://x.com/wesselvk/status/2111886632529920422", "label": "行程两端Uber全订好"}, {"url": "https://x.com/TravelingTony69/status/2111878096496529561", "label": "航班车酒店并订球赛票"}, {"url": "https://x.com/Lau_renpetersen/status/2111938236222484610", "label": "规划并刷卡订下里斯本行程"}], "pct": 13.8}, {"scene": "电话客服", "count": 3, "reps": [{"url": "https://x.com/awhxtech/status/2111976345089507566", "label": "宽带谈到1G每月$50"}, {"url": "https://x.com/georgebsocial/status/2111971538085822788", "label": "谈降网费$58/月"}, {"url": "https://x.com/JSB152sbcg5268/status/2111925991945965961", "label": "朋友的bot打来留言"}], "pct": 10.3}, {"scene": "餐厅订位", "count": 2, "reps": [{"url": "https://x.com/BrianRoemmele/status/2111812467500458135", "label": "电话订到意大利餐厅"}, {"url": "https://x.com/james_fowler_/status/2111888527826813404", "label": "订到只收大桌的位子"}], "pct": 6.9}, {"scene": "预约政务求职", "count": 2, "reps": [{"url": "https://x.com/TravisWeathers/status/2111866499350835477", "label": "新申请人即刻联系"}, {"url": "https://x.com/signalnoise8020/status/2111976018257023483", "label": "找电工后催交照片"}], "pct": 6.9}]}, {"id": "instinct", "name": "Instinct", "searchCalls": 25, "raw": 590, "pool": 492, "meaningful": 28, "tasks": 13, "rows": [{"scene": "购物电商", "count": 3, "reps": [{"url": "https://x.com/billkavadias/status/2111912546651525311", "label": "比价后按偏好发货"}, {"url": "https://x.com/AIGenX_/status/2111708742576460091", "label": "球赛、狗粮、衣服、晚宴"}, {"url": "https://x.com/hellwolf2025/status/2111486558033391719", "label": "钱包一键付Shopify"}], "pct": 23.1}, {"scene": "账单保险省钱", "count": 2, "reps": [{"url": "https://x.com/ldagar315/status/2111323086758797520", "label": "取消附加项并追退款"}, {"url": "https://x.com/asemota/status/2111844703477919950", "label": "找到往来并跟进退款"}], "pct": 15.4}, {"scene": "研究策略内容", "count": 2, "reps": [{"url": "https://x.com/InstinctAddict/status/2111877001900433910", "label": "运营4个YouTube频道"}, {"url": "https://x.com/justinfredette/status/2111201263769817543", "label": "iMessage交回带出处调研"}], "pct": 15.4}, {"scene": "电话客服", "count": 1, "reps": [{"url": "https://x.com/asemota/status/2111834775883329918", "label": "接手拖欠的设备理赔"}], "pct": 7.7}, {"scene": "旅行酒店航班", "count": 1, "reps": [{"url": "https://x.com/ChaitenyaG/status/2111241438017257752", "label": "盯开放瞬间订上个人舱"}], "pct": 7.7}, {"scene": "技术开发设备", "count": 1, "reps": [{"url": "https://x.com/jshgrvs/status/2111340890807796134", "label": "两天搭两店并加扩展"}], "pct": 7.7}, {"scene": "餐厅外卖", "count": 1, "reps": [{"url": "https://x.com/6d617474/status/2111867378632192367", "label": "早餐三明治漏订香肠（失败）"}], "pct": 7.7}, {"scene": "邮件日历收件箱", "count": 1, "reps": [{"url": "https://x.com/JSP0004/status/2111929036737839222", "label": "发信吐槽不稳（失败）"}], "pct": 7.7}, {"scene": "健康生活方式", "count": 1, "reps": [{"url": "https://x.com/xartzj/status/2111884588377387041", "label": "设一天四次喝水提醒"}], "pct": 7.7}]}, {"id": "dots", "name": "Dots", "searchCalls": 26, "raw": 369, "pool": 265, "meaningful": 45, "tasks": 15, "rows": [{"scene": "技术开发设备", "count": 10, "reps": [{"url": "https://x.com/devhims/status/2111672219046973480", "label": "审查代码烧额度（越权）"}, {"url": "https://x.com/e38383/status/2111216109688963129", "label": "自动管更新与报错"}, {"url": "https://x.com/E__Strobel/status/2111126773299859803", "label": "当编排器一小时内做出核心功能"}], "pct": 66.7}, {"scene": "账单保险省钱", "count": 3, "reps": [{"url": "https://x.com/kylewgrove/status/2111727717683261780", "label": "一句话取消健身订阅"}, {"url": "https://x.com/soycronus/status/2111508293856186678", "label": "两Dot互发邮件并报税"}, {"url": "https://x.com/marginaldollar/status/2111573524154319181", "label": "提醒领$200额度"}], "pct": 20.0}, {"scene": "电话客服", "count": 1, "reps": [{"url": "https://x.com/btraut/status/2111265536181248015", "label": "砍价后双方改叫人工"}], "pct": 6.7}, {"scene": "研究策略内容", "count": 1, "reps": [{"url": "https://x.com/BradGroux/status/2111130900083642511", "label": "通话45分钟重塑工作流"}], "pct": 6.7}]}, {"id": "cue", "name": "Cue", "searchCalls": 15, "raw": 120, "pool": 48, "meaningful": 4, "tasks": 2, "rows": [{"scene": "邮件日历收件箱", "count": 1, "reps": [{"url": "https://x.com/yummysoosu/status/2111400086009938008", "label": "两Cue拉群后互换邮箱"}], "pct": 50.0}, {"scene": "技术开发设备", "count": 1, "reps": [{"url": "https://x.com/yummysoosu/status/2111580995397009482", "label": "能画头像但不能改资料"}], "pct": 50.0}]}]};
     /*DAILY_END*/
 
     /*PRODUCTS_START*/
@@ -553,11 +587,11 @@
     "reps": [
      {
       "url": "https://x.com/ai_ae_fan/status/2111299973539102887",
-      "label": "点常点的三明治却自称第一次下单等连番失误（失败）"
+      "label": "三明治下单连错（失败）"
      },
      {
       "url": "https://x.com/oldedb/status/2111526973432594887",
-      "label": "订披萨、订晚餐位、小站送礼三连失败（失败）"
+      "label": "订餐订位送礼都失败"
      }
     ]
    }
@@ -577,15 +611,15 @@
     "reps": [
      {
       "url": "https://x.com/fbwalker4/status/2109066055830135113",
-      "label": "开车通话中拉合同日期并邮件客户"
+      "label": "通话中拉合同并邮件"
      },
      {
       "url": "https://x.com/mikepat711/status/2108624182036603132",
-      "label": "启用Bot邮箱处理GitHub/agent mail"
+      "label": "用Bot邮箱处理GitHub"
      },
      {
       "url": "https://x.com/xrDLP/status/2108694124350284203",
-      "label": "夜间整理40封邮件并起草回复"
+      "label": "夜间整理40封邮件"
      }
     ]
    },
@@ -604,7 +638,7 @@
      },
      {
       "url": "https://x.com/BeefStewtoo/status/2109153099122114893",
-      "label": "店铺类目/文案/定价/上架"
+      "label": "类目文案定价上架"
      }
     ]
    },
@@ -619,11 +653,11 @@
      },
      {
       "url": "https://x.com/DaaanielSan/status/2109163525402734626",
-      "label": "营销视频方案+插件"
+      "label": "营销视频方案"
      },
      {
       "url": "https://x.com/tomaslau/status/2109212226372644933",
-      "label": "Typefully起草发帖"
+      "label": "起草并发帖"
      }
     ]
    },
@@ -634,15 +668,15 @@
     "reps": [
      {
       "url": "https://x.com/reggieoverton/status/2108481937929351400",
-      "label": "淋浴中找航班并订Uber"
+      "label": "淋浴中订航班和车"
      },
      {
       "url": "https://x.com/derek_elliott/status/2108656590576586857",
-      "label": "春假Airbnb直连省$250"
+      "label": "春假订房省$250"
      },
      {
       "url": "https://x.com/sklyarov/status/2108659695775056069",
-      "label": "找回阿姆斯特丹酒店遗忘手机"
+      "label": "找回酒店遗忘手机"
      }
     ]
    },
@@ -653,15 +687,15 @@
     "reps": [
      {
       "url": "https://x.com/cmd_alt_ecs/status/2109066665791258885",
-      "label": "Tailscale/SSH杀进程"
+      "label": "远程杀掉卡住进程"
      },
      {
       "url": "https://x.com/MachJuan8/status/2109140176874414459",
-      "label": "与Cursor协同跑agents"
+      "label": "和Cursor一起跑任务"
      },
      {
       "url": "https://x.com/mikepat711/status/2108624182036603132",
-      "label": "Bot自有GitHub+邮箱"
+      "label": "Bot自有GitHub和邮箱"
      }
     ]
    },
@@ -680,7 +714,7 @@
      },
      {
       "url": "https://x.com/Cmin914725641/status/2108652585163063708",
-      "label": "集体诉讼+保修核对"
+      "label": "核对诉讼和保修"
      }
     ]
    },
@@ -691,11 +725,11 @@
     "reps": [
      {
       "url": "https://x.com/MitchTiler/status/2109017328268812405",
-      "label": "续车牌+Costco轮胎预约"
+      "label": "续车牌并预约轮胎"
      },
      {
       "url": "https://x.com/michaelyared/status/2108922682842681612",
-      "label": "开车约DMV/改道"
+      "label": "开车约DMV并改道"
      },
      {
       "url": "https://x.com/PoorPrepper2112/status/2109107877294363107",
@@ -710,15 +744,15 @@
     "reps": [
      {
       "url": "https://x.com/lafraia/status/2108535583798657469",
-      "label": "VoIP酒店测试电话"
+      "label": "酒店测试电话"
      },
      {
       "url": "https://x.com/faiAI0/status/2109099983526101223",
-      "label": "自建电话+短信助手"
+      "label": "自建电话短信助手"
      },
      {
       "url": "https://x.com/NathanJBarnes/status/2109120865262830013",
-      "label": "打电话给Grok Bot办事"
+      "label": "打电话给Bot办事"
      }
     ]
    },
@@ -729,15 +763,15 @@
     "reps": [
      {
       "url": "https://x.com/ve55959/status/2109208087056036026",
-      "label": "发布Suno吉他专辑"
+      "label": "发布吉他专辑"
      },
      {
       "url": "https://x.com/thenovelninja/status/2109150354050785761",
-      "label": "为母亲建医疗日记Bot"
+      "label": "为母亲建医疗日记"
      },
      {
       "url": "https://x.com/AWar1586398/status/2109113062678462691",
-      "label": "辅助训练与生活方式"
+      "label": "辅助训练与生活"
      }
     ]
    },
@@ -748,15 +782,15 @@
     "reps": [
      {
       "url": "https://x.com/matt_hiott/status/2109817794615259239",
-      "label": "自动下单“老样子”咖啡，车到即取"
+      "label": "自动下单老样子咖啡"
      },
      {
       "url": "https://x.com/yatharthmann/status/2109566881225191844",
-      "label": "打电话给Grok Bot订到Domino's披萨（地址、支付全包）"
+      "label": "电话订到Domino披萨"
      },
      {
       "url": "https://x.com/Mbrown00l/status/2110175707963826349",
-      "label": "找迈阿密酒店附近的餐厅"
+      "label": "找酒店附近的餐厅"
      }
     ]
    },
@@ -767,11 +801,11 @@
     "reps": [
      {
       "url": "https://x.com/BrianRoemmele/status/2111812467500458135",
-      "label": "打电话订意大利餐厅位（语音订位bot）"
+      "label": "电话订到意大利餐厅"
      },
      {
       "url": "https://x.com/james_fowler_/status/2111888527826813404",
-      "label": "打电话订到通常只接受大桌的餐厅位"
+      "label": "订到只收大桌的位子"
      }
     ]
    }
@@ -791,7 +825,7 @@
     "reps": [
      {
       "url": "https://x.com/vinidlidoo/status/2108377931550785855",
-      "label": "多城市行程+Amex积分"
+      "label": "多城市行程兑积分"
      },
      {
       "url": "https://x.com/momwithai/status/2108455231759798660",
@@ -799,7 +833,7 @@
      },
      {
       "url": "https://x.com/instinctexpert/status/2107962313127149698",
-      "label": "东南亚机票+签证提醒"
+      "label": "机票加签证提醒"
      }
     ]
    },
@@ -814,7 +848,7 @@
      },
      {
       "url": "https://x.com/nihalmehta/status/2108931028484018559",
-      "label": "Shop Pay买万圣节装饰"
+      "label": "买万圣节装饰"
      },
      {
       "url": "https://x.com/threeoneonetwo/status/2109170413162909865",
@@ -837,7 +871,7 @@
      },
      {
       "url": "https://x.com/RolfeWinkler/status/2109740862024585231",
-      "label": "从United客服要回$65登机口托运费"
+      "label": "要回$65托运费"
      }
     ]
    },
@@ -848,15 +882,15 @@
     "reps": [
      {
       "url": "https://x.com/rajeshraghavan_/status/2109464791714787833",
-      "label": "接入邮箱后“垃圾邮件”变有用信息"
+      "label": "垃圾邮件变有用信息"
      },
      {
       "url": "https://x.com/rayinbrugess/status/2109657434918994336",
-      "label": "接GitHub后按表格发出10+封求职冷邮件"
+      "label": "发出10多封求职冷邮件"
      },
      {
       "url": "https://x.com/maybeTuring/status/2109746324564521078",
-      "label": "清掉未订阅的政治竞选邮件"
+      "label": "清掉竞选推销邮件"
      }
     ]
    },
@@ -871,11 +905,11 @@
      },
      {
       "url": "https://x.com/danpurchas/status/2109487966855045280",
-      "label": "麦当劳得来速3次出错，投诉后拿回3张代金券"
+      "label": "得来速出错拿回3张券"
      },
      {
       "url": "https://x.com/AnirudhKejriwal/status/2109226663368171701",
-      "label": "替人跟多家航空公司客服确认航班问题"
+      "label": "跟多家航司确认航班"
      }
     ]
    },
@@ -890,11 +924,11 @@
      },
      {
       "url": "https://x.com/rkaria54/status/2109763317824954639",
-      "label": "签约前审搬家合同，发现要自办卡车停车许可"
+      "label": "审合同发现要自办许可"
      },
      {
       "url": "https://x.com/growth56460/status/2109997901426352189",
-      "label": "口述当天经历，由它整理成每日纪事"
+      "label": "口述整理成每日纪事"
      }
     ]
    },
@@ -909,11 +943,11 @@
      },
      {
       "url": "https://x.com/AIGenX_/status/2109404264732774503",
-      "label": "临时给全家搞到美国陆军AUSA展会证件"
+      "label": "临时搞到展会证件"
      },
      {
       "url": "https://x.com/mufasaYC/status/2109681866848834002",
-      "label": "转发父母消息，替妈妈申请两个签证"
+      "label": "替妈妈申请两个签证"
      }
     ]
    },
@@ -924,15 +958,15 @@
     "reps": [
      {
       "url": "https://x.com/krika2810/status/2108916459271278689",
-      "label": "建站/CRM/Claude Code"
+      "label": "建站、CRM和写代码"
      },
      {
       "url": "https://x.com/Saasystartup/status/2110496163086606582",
-      "label": "三周前用Instinct搭的东西，准备迁到Grok Bot"
+      "label": "旧项目准备迁走"
      },
      {
       "url": "https://x.com/PratikSola66236/status/2110659245851152625",
-      "label": "WhatsApp上Instinct卡住24小时只回同一句（失败）"
+      "label": "卡住一天只回一句（失败）"
      }
     ]
    },
@@ -943,11 +977,11 @@
     "reps": [
      {
       "url": "https://x.com/RayFiletya/status/2109507579164643489",
-      "label": "“雇”厨师为全家定制备餐计划并做成网站"
+      "label": "定制备餐计划并做成网站"
      },
      {
       "url": "https://x.com/TommyC15/status/2110274946882744500",
-      "label": "WhatsApp上为孩子生成Knook故事"
+      "label": "为孩子生成睡前故事"
      },
      {
       "url": "https://x.com/xartzj/status/2111884588377387041",
@@ -966,7 +1000,7 @@
      },
      {
       "url": "https://x.com/EtaiRahmil/status/2109032033024692492",
-      "label": "取消tee time后仍追问"
+      "label": "取消后仍追问"
      }
     ]
    },
@@ -977,7 +1011,7 @@
     "reps": [
      {
       "url": "https://x.com/Emmie/status/2109795547058204798",
-      "label": "盯网站放量，抢到提前2天预订的日式早餐"
+      "label": "抢到提前两天的早餐"
      },
      {
       "url": "https://x.com/6d617474/status/2111867378632192367",
@@ -1001,15 +1035,15 @@
     "reps": [
      {
       "url": "https://x.com/solanky/status/2105871916800389433",
-      "label": "Ubuntu杀进程后找回并恢复Codex线程"
+      "label": "杀进程后恢复线程"
      },
      {
       "url": "https://x.com/coopernusbaum/status/2108498437385641999",
-      "label": "未交代就自主让Codex在Windows续跑测试"
+      "label": "自主让Codex续跑测试"
      },
      {
       "url": "https://x.com/imontenegroc/status/2108960734201659832",
-      "label": "自建Canvas MCP让Dot看到大学课程"
+      "label": "自建工具看大学课程"
      }
     ]
    },
@@ -1020,15 +1054,15 @@
     "reps": [
      {
       "url": "https://x.com/aaronolin/status/2106407898410565891",
-      "label": "改电力供应商并补订学校照片"
+      "label": "改电供应商并补订照片"
      },
      {
       "url": "https://x.com/DevAdventur3s/status/2109357736093757508",
-      "label": "拍罚单照片，发现可付费不留案底"
+      "label": "罚单可付费不留案底"
      },
      {
       "url": "https://x.com/itsrywal/status/2108359456006525058",
-      "label": "会议录音对照发票，发现应收调整"
+      "label": "录音对发票发现调整"
      }
     ]
    },
@@ -1039,15 +1073,15 @@
     "reps": [
      {
       "url": "https://x.com/Memphisbr/status/2106010893901255066",
-      "label": "从垃圾邮件挖出GitHub提及并处理"
+      "label": "垃圾邮件挖出GitHub"
      },
      {
       "url": "https://x.com/listenyoulittle/status/2108369440475926949",
-      "label": "让Dot发20封邮件（吃掉周限额约40%）"
+      "label": "发20封邮件吃掉周限额"
      },
      {
       "url": "https://x.com/Harsshavardan3/status/2106652426895823259",
-      "label": "主动发现邮件里Node21部署将失效"
+      "label": "发现部署即将失效"
      }
     ]
    },
@@ -1058,15 +1092,15 @@
     "reps": [
      {
       "url": "https://x.com/djthompson13/status/2108620327378878965",
-      "label": "打电话让Dot给Codex/Claude配置MCP"
+      "label": "电话让Dot配置工具"
      },
      {
       "url": "https://x.com/YeshodharaB/status/2108379900327399760",
-      "label": "开车时打电话布置任务并实时改文档"
+      "label": "开车电话布置并改文档"
      },
      {
       "url": "https://x.com/frankieramirez/status/2110185232385102198",
-      "label": "打电话让Dot带8岁女儿做项目约90分钟"
+      "label": "带女儿做项目90分钟"
      }
     ]
    },
@@ -1077,15 +1111,15 @@
     "reps": [
      {
       "url": "https://x.com/asikunaa/status/2107584246537703926",
-      "label": "设计机器人夹具并预留硬件订单"
+      "label": "设计夹具并预留订单"
      },
      {
       "url": "https://x.com/cschubiner/status/2106141327369158805",
-      "label": "不愿填礼品卡/信用卡等敏感结账表单"
+      "label": "不愿填敏感结账表单"
      },
      {
       "url": "https://x.com/egalanos/status/2110188447189373126",
-      "label": "建MCP站点让Dot管理购物清单"
+      "label": "建站管理购物清单"
      }
     ]
    },
@@ -1096,15 +1130,15 @@
     "reps": [
      {
       "url": "https://x.com/CtrlAltDwayne/status/2105603794293887167",
-      "label": "发现斐济酒店订错月份并主动提醒"
+      "label": "发现酒店订错月份"
      },
      {
       "url": "https://x.com/davidlonjon/status/2110225223228555727",
-      "label": "主动追问是否已订调研中的机票"
+      "label": "追问机票订了没有"
      },
      {
       "url": "https://x.com/VicVijayakumar/status/2108201482956796319",
-      "label": "独立订好演唱会票（用户只审批扣款）"
+      "label": "独立订票只审批扣款"
      }
     ]
    },
@@ -1115,15 +1149,15 @@
     "reps": [
      {
       "url": "https://x.com/emollick/status/2109789058587377683",
-      "label": "主动复现Substack自动订阅bug并客服排查"
+      "label": "复现订阅故障并排查"
      },
      {
       "url": "https://x.com/mofyakabemba/status/2110373642659852585",
-      "label": "与Dot共同执导食品广告片"
+      "label": "一起执导食品广告"
      },
      {
       "url": "https://x.com/BradGroux/status/2111130900083642511",
-      "label": "机场回家路上与Dot通话45分钟重塑工作流"
+      "label": "通话45分钟重塑工作流"
      }
     ]
    },
@@ -1134,11 +1168,11 @@
     "reps": [
      {
       "url": "https://x.com/VraserX/status/2105367083454550297",
-      "label": "主动找到相关进修课并完成预约"
+      "label": "找到进修课并预约"
      },
      {
       "url": "https://x.com/cristianvega/status/2110872214299930728",
-      "label": "申PhD时比Grok Bot更主动提醒该行动"
+      "label": "申PhD时更主动提醒"
      }
     ]
    },
@@ -1149,7 +1183,7 @@
     "reps": [
      {
       "url": "https://x.com/PrimeBreaf1/status/2105769114900046129",
-      "label": "按要求订到意大利餐厅晚餐（体验与演示有落差）"
+      "label": "订到晚餐但体验有落差"
      }
     ]
    }
@@ -1169,15 +1203,15 @@
     "reps": [
      {
       "url": "https://x.com/KarthikIO/status/2104651648044056813",
-      "label": "打电话查库存，接通后立即挂断"
+      "label": "查库存接通就挂断"
      },
      {
       "url": "https://x.com/KarthikIO/status/2104636090296742396",
-      "label": "在旧金山用 Cue 本地号打电话查询/预订"
+      "label": "本地号查询并预订"
      },
      {
       "url": "https://x.com/mokshaowei/status/2104742580659573163",
-      "label": "开通电话服务，打电话约午餐失败（易被背景音打断）"
+      "label": "约午餐失败易被打断"
      }
     ]
    },
@@ -1188,15 +1222,15 @@
     "reps": [
      {
       "url": "https://x.com/ChrisUniverse/status/2106467973263425556",
-      "label": "同提示词对比五家；Cue 未给市政府发邮件（Dots 发出）"
+      "label": "同提示未给市政府发信"
      },
      {
       "url": "https://x.com/ChrisUniverse/status/2106307690544734509",
-      "label": "同提示发给 Muse/Cue/Bot/Perplexity，均未给市政府发邮件"
+      "label": "四家都没给市政府发信"
      },
      {
       "url": "https://x.com/davidazua/status/2109730505679683618",
-      "label": "独立邮箱2分钟内自动回复进站线索表单"
+      "label": "两分钟回复进站线索"
      }
     ]
    },
@@ -1207,11 +1241,11 @@
     "reps": [
      {
       "url": "https://x.com/Khushiiieee_/status/2105714740387618932",
-      "label": "试用 Cue，自称 agent 独立完成一次外卖下单"
+      "label": "自称独立完成外卖下单"
      },
      {
       "url": "https://x.com/BGramhan/status/2104780058128998660",
-      "label": "开通电话选项时被直接扣费，无结账确认"
+      "label": "开通电话被直接扣费"
      }
     ]
    },
@@ -1222,7 +1256,7 @@
     "reps": [
      {
       "url": "https://x.com/niko70129972/status/2109923072660906157",
-      "label": "把杂活交给Cue，含与客服battle退款"
+      "label": "杂活里帮着争退款"
      }
     ]
    },
@@ -1233,84 +1267,7 @@
     "reps": [
      {
       "url": "https://x.com/yummysoosu/status/2111580995397009482",
-      "label": "画头像却不能自改资料，对比Grok Bot可自设"
-     }
-    ]
-   }
-  ]
- },
- {
-  "id": "today",
-  "name": "Today",
-  "tasks": 11,
-  "searchCalls": "小红书7关键词扩搜",
-  "pool": "concrete-task",
-  "rows": [
-   {
-    "scene": "研究策略内容",
-    "count": 4,
-    "pct": 36.4,
-    "reps": [
-     {
-      "url": "https://www.xiaohongshu.com/explore/6aa0be260000000011034d77",
-      "label": "当工作搭档主动更新 Obsidian 知识库"
-     },
-     {
-      "url": "https://www.xiaohongshu.com/explore/6ab5266d000000001a03026d",
-      "label": "每天07:37抓近24h AI产品动态并备微信发送"
-     },
-     {
-      "url": "https://www.xiaohongshu.com/explore/6ac1a954000000000200f51c",
-      "label": "把朋友可疑Boss聊天贴给Today，生成诈骗分析文件并劝住对方"
-     }
-    ]
-   },
-   {
-    "scene": "健康生活方式",
-    "count": 3,
-    "pct": 27.3,
-    "reps": [
-     {
-      "url": "https://www.xiaohongshu.com/explore/6abb6434000000001303cce2",
-      "label": "COROS训练/睡眠接入后主动排计划，天气差改安排，微信代发私聊梗"
-     },
-     {
-      "url": "https://www.xiaohongshu.com/explore/6ab2876d00000000330353b1",
-      "label": "睡眠差当天不硬推，改傍晚散步并备复盘文档"
-     },
-     {
-      "url": "https://www.xiaohongshu.com/explore/6acc8a8c000000001402c4a4",
-      "label": "HYROX备赛：日历+手表睡眠冲突提醒并列出与教练确认清单"
-     }
-    ]
-   },
-   {
-    "scene": "邮件日历收件箱",
-    "count": 3,
-    "pct": 27.3,
-    "reps": [
-     {
-      "url": "https://www.xiaohongshu.com/explore/6ac87f290000000014038b77",
-      "label": "每天8点双邮箱摘要（个人必办/公司审批待办），并做五十音离线练习"
-     },
-     {
-      "url": "https://www.xiaohongshu.com/explore/6ac0f1ec000000000a020c7c",
-      "label": "导入日历拆24项待办；读155封邮件筛5件；A股开收盘简报；手机写入游泳日程"
-     },
-     {
-      "url": "https://www.xiaohongshu.com/explore/6acce031000000001a022dbe",
-      "label": "接微信聊天：语音消息可回，当微信好友记零碎想法"
-     }
-    ]
-   },
-   {
-    "scene": "账单保险省钱",
-    "count": 1,
-    "pct": 9.1,
-    "reps": [
-     {
-      "url": "https://www.xiaohongshu.com/explore/6ac870d7000000001c02d474",
-      "label": "随手提醒、丢入报销文件稍后拉取、体检报告健康咨询"
+      "label": "能画头像但不能改资料"
      }
     ]
    }
@@ -1353,14 +1310,19 @@
       const rowsHtml = product.rows.map(r => {
         const color = CATEGORY_COLORS[r.scene] || "#999";
         const links = r.reps.map(rep =>
-          `<a href="${escapeHtml(rep.url)}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(rep.label)}">${escapeHtml(rep.label)}</a>`
+          `<a href="${escapeHtml(rep.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(rep.label)}</a>`
         ).join("");
-        return `<tr>
-          <td class="scene"><span class="dot" style="background:${color}"></span>${escapeHtml(r.scene)}</td>
-          <td class="num">${r.count}</td>
-          <td class="pct">${r.pct.toFixed(1)}%</td>
-          <td class="reps"><div class="rep-links">${links}</div></td>
-        </tr>`;
+        const repRow = links
+          ? `<tr class="rep-row"><td class="reps" colspan="3"><div class="rep-links">${links}</div></td></tr>`
+          : "";
+        return `<tbody class="scene-group">
+          <tr class="metrics">
+            <td class="scene"><span class="dot" style="background:${color}"></span>${escapeHtml(r.scene)}</td>
+            <td class="num">${r.count}</td>
+            <td class="pct">${r.pct.toFixed(1)}%</td>
+          </tr>
+          ${repRow}
+        </tbody>`;
       }).join("");
 
       card.innerHTML = `
@@ -1389,10 +1351,9 @@
                 <th>场景</th>
                 <th class="num">帖数</th>
                 <th class="num">占比</th>
-                <th>典型代表帖</th>
               </tr>
             </thead>
-            <tbody>${rowsHtml}</tbody>
+            ${rowsHtml}
           </table>
         </div>
       `;
